@@ -55,14 +55,14 @@ const LoginForm = () => {
             <label className="flex items-center text-sm text-gray-600">
               <input
                 type="checkbox"
-                className="h-4 w-4 text-blue-600 rounded border-gray-300"
+                className="h-4 w-4 text-primary rounded border-gray-300"
                 onChange={() => setShowPassword(!showPassword)}
               />
               <span className="ml-2">Show password</span>
             </label>
             <a
               href="/forgot-password"
-              className="text-sm text-primary hover:underline"
+              className="text-sm text-blue-500 hover:underline"
             >
               Forgot Password?
             </a>
