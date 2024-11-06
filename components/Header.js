@@ -46,10 +46,10 @@ const Header = () => {
           className={`md:flex space-x-4 items-center hidden`}
           aria-label="Main Navigation"
         >
-          {["Properties", "About", "Contact"].map((item) => (
+          {["List Your Property", "About"].map((item) => (
             <a
               key={item}
-              href={`/${item.toLowerCase()}`}
+              href={`/${item.toLowerCase().replace(" ", "-")}`}
               className={`text-sm font-medium transition-colors duration-300 hover:text-gray-700`}
             >
               {item}
@@ -83,10 +83,10 @@ const Header = () => {
         <div className="md:hidden bg-white shadow-lg border-b border-gray-200 py-4">
           <nav aria-label="Mobile Navigation">
             <ul className="flex flex-col space-y-4 items-center px-6">
-              {["Properties", "About", "Contact"].map((item) => (
+              {["List Your Property", "About"].map((item) => (
                 <li key={item}>
                   <a
-                    href={`/${item.toLowerCase()}`}
+                    href={`/${item.toLowerCase().replace(" ", "-")}`}
                     className={`text-sm font-medium transition-colors duration-300 hover:text-gray-700`}
                   >
                     {item}
