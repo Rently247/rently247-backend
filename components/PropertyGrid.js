@@ -1,43 +1,110 @@
-import React from "react";
+"use client";
 
-const PropertyCard = ({ address, type, price }) => (
-  <div className="flex flex-col">
-    <div className="relative rounded-2xl overflow-hidden mb-3">
-      <img
-        src="https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg"
-        alt="Property"
-        className="w-full aspect-square object-cover"
+import React, { useState } from "react";
+import Slider from "react-slick";
+import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+
+const PropertyCard = ({ id, address, type, price, images }) => {
+  const [showControls, setShowControls] = useState(false);
+  const sliderRef = React.useRef(null);
+
+  const handlePrev = () => {
+    if (sliderRef.current) {
+      sliderRef.current.slickPrev();
+    }
+  };
+
+  const handleNext = () => {
+    if (sliderRef.current) {
+      sliderRef.current.slickNext();
+    }
+  };
+
+  const settings = {
+    dots: true,
+    infinite: false,
+    speed: 500,
+    slidesToShow: 1,
+    slidesToScroll: 1,
+    autoplay: false,
+    autoplaySpeed: 3000,
+    appendDots: (dots) =>
+      showControls ? (
+        <div
+          style={{
+            position: "absolute",
+            top: "95%",
+            transform: "translateY(-50%)",
+            width: "100%",
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            padding: "0 16px",
+          }}
+        >
+          {dots}
+        </div>
+      ) : (
+        <div></div>
+      ),
+    customPaging: () => (
+      <div
+        style={{
+          width: "12px",
+          height: "12px",
+          borderRadius: "50%",
+          backgroundColor: "rgba(255, 255, 255, 0.5)",
+        }}
       />
-      {/* <button className="absolute bottom-4 right-4 w-8 h-8 bg-white rounded-full flex items-center justify-center">
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" />
-        </svg>
-      </button> */}
+    ),
+  };
+
+  return (
+    <div
+      className="flex flex-col relative"
+      onMouseEnter={() => setShowControls(true)}
+      onMouseLeave={() => setShowControls(false)}
+    >
+      <div className="relative rounded-2xl overflow-hidden mb-3">
+        <Slider ref={sliderRef} {...settings}>
+          {images.map((image, index) => (
+            <div key={index}>
+              <img
+                src={image}
+                alt={`Property ${index}`}
+                className="w-full aspect-square object-cover"
+              />
+            </div>
+          ))}
+        </Slider>
+        {showControls && (
+          <div className="absolute top-1/2 left-0 right-0 transform -translate-y-1/2 flex justify-between px-4">
+            <button
+              className="text-white hover:text-gray-300 transition-colors bg-gray-900 bg-opacity-50 rounded-full p-2"
+              onClick={handlePrev}
+            >
+              <ChevronLeftIcon size={32} />
+            </button>
+            <button
+              className="text-white hover:text-gray-300 transition-colors bg-gray-900 bg-opacity-50 rounded-full p-2"
+              onClick={handleNext}
+            >
+              <ChevronRightIcon size={32} />
+            </button>
+          </div>
+        )}
+      </div>
+      <a href={`/properties/${id}`} className="">
+        <h3 className="font-bold text-gray-900">{address}</h3>
+        <p className="text-gray-600">{type}</p>
+        <p className="font-semibold text-gray-900">
+          RWF {Number(price)?.toLocaleString()}{" "}
+          <span className="text-sm text-gray-600 font-normal">/ month</span>
+        </p>
+      </a>
     </div>
-    <a href="/properties/1" className="">
-      <h3 className="font-bold text-gray-900">{address}</h3>
-      <p className="text-gray-600">{type}</p>
-      <p className="font-semibold text-gray-900">
-        RWF {Number(price)?.toLocaleString()}{" "}
-        <span
-          className="text-sm text-gray-600 font-normal
-      "
-        >
-          / month
-        </span>
-      </p>
-    </a>
-  </div>
-);
+  );
+};
 
 const PropertyGrid = () => {
   const properties = [
@@ -46,68 +113,126 @@ const PropertyGrid = () => {
       type: "Condo",
       price: "100000",
       id: 1,
+      images: [
+        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
+        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
+        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
+        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
+      ],
     },
     {
       address: "KG 20, Zindiro",
       type: "Condo",
       price: "100000",
       id: 2,
+      images: [
+        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
+        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
+        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
+        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
+      ],
     },
     {
       address: "KG 20, Zindiro",
       type: "Condo",
       price: "100000",
       id: 3,
+      images: [
+        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
+        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
+        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
+        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
+      ],
     },
     {
       address: "KG 20, Zindiro",
       type: "Condo",
       price: "100000",
       id: 4,
+      images: [
+        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
+        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
+        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
+        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
+      ],
     },
     {
       address: "KG 20, Zindiro",
       type: "Condo",
       price: "100000",
       id: 5,
+      images: [
+        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
+        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
+        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
+        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
+      ],
     },
     {
       address: "123 Main Street",
       type: "Sample property",
       price: "250000",
       id: 6,
+      images: [
+        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
+        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
+        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
+        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
+      ],
     },
     {
       address: "123 Main Street",
       type: "Sample property",
       price: "250000",
       id: 7,
+      images: [
+        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
+        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
+        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
+        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
+      ],
     },
     {
       address: "123 Main Street",
       type: "Sample property",
       price: "250000",
       id: 8,
+      images: [
+        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
+        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
+        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
+        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
+      ],
     },
     {
       address: "123 Main Street",
       type: "Sample property",
       price: "250000",
       id: 9,
+      images: [
+        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
+        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
+        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
+        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
+      ],
     },
   ];
 
   return (
-    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-6 p-6 gap-y-12">
-      {properties.map((property) => (
-        <PropertyCard
-          key={property.id}
-          address={property.address}
-          type={property.type}
-          price={property.price}
-        />
-      ))}
-    </div>
+    <>
+      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6 gap-y-12">
+        {properties.map((property) => (
+          <PropertyCard
+            key={property.id}
+            address={property.address}
+            type={property.type}
+            price={property.price}
+            images={property.images}
+            id={property.id}
+          />
+        ))}
+      </div>
+    </>
   );
 };
 
