@@ -49,7 +49,10 @@ const Header = () => {
           {["List Your Property", "About"].map((item) => (
             <a
               key={item}
-              href={`/${item.toLowerCase().replace(" ", "-")}`}
+              href={`/${item
+                .toLowerCase()
+                .replace(" ", "-")
+                .replace(" ", "-")}`}
               className={`text-sm font-medium transition-colors duration-300 hover:text-gray-700`}
             >
               {item}
@@ -86,7 +89,10 @@ const Header = () => {
               {["List Your Property", "About"].map((item) => (
                 <li key={item}>
                   <a
-                    href={`/${item.toLowerCase().replace(" ", "-")}`}
+                    href={`/${item
+                      .toLowerCase()
+                      .replace(" ", "-")
+                      .replace(" ", "-")}`}
                     className={`text-sm font-medium transition-colors duration-300 hover:text-gray-700`}
                   >
                     {item}
