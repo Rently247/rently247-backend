@@ -1,10 +1,37 @@
 "use client";
 
-import { useState } from "react";
+import { useSignIn } from "@/hooks/useSignIn";
+import { useEffect, useState } from "react";
 import { FaGoogle } from "react-icons/fa";
+import toast from "react-hot-toast";
 
 const LoginForm = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [loginData, setLoginData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const { loading, error, success, signIn } = useSignIn();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    signIn(loginData);
+  };
+
+  useEffect(() => {
+    if (error !== null && error !== "" && !loading && !success) {
+      toast.error(error);
+    } else if (success && !loading && error === null) {
+      toast.success(success);
+    } else if (loading) {
+      const toastId = toast.loading("Loading...");
+      return () => {
+        toast.dismiss(toastId);
+      };
+    }
+  }, [loading, error, success]);
+
 
   return (
     <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
@@ -33,6 +60,9 @@ const LoginForm = () => {
             placeholder="Enter email"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2"
             required
+            onChange={(e) =>
+              setLoginData({ ...loginData, email: e.target.value })
+            }
           />
         </div>
 
@@ -50,6 +80,9 @@ const LoginForm = () => {
             placeholder="Enter password"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2"
             required
+            onChange={(e) =>
+              setLoginData({ ...loginData, password: e.target.value })
+            }
           />
           <div className="flex items-center justify-between mt-2">
             <label className="flex items-center text-sm text-gray-600">
@@ -73,6 +106,7 @@ const LoginForm = () => {
         <button
           type="submit"
           className="w-full py-3 text-sm font-medium text-white bg-primary rounded-lg hover:bg-blue-900 transition duration-300"
+          onClick={handleSubmit}
         >
           Log in
         </button>

@@ -6,7 +6,7 @@ const prisma = new PrismaClient()
 
 export async function POST(request) {
 try {
-    const {email, password } = await request.json()
+    const {email, password } = await request.json();
 
     if(!email || !password) {
         return NextResponse.json({message: "Missing credentials"}, {status: 400})
@@ -23,7 +23,7 @@ try {
     })
 
     if(!user) {
-        return NextResponse.json({message: "Unauthorized"}, {status:401})
+        return NextResponse.json({message: "Invalid credentials"}, {status:401})
     }
 
     const token = jwt.sign(
