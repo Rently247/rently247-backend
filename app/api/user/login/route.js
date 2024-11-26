@@ -32,7 +32,7 @@ try {
         {expiresIn: "2h"}
     )
 
-    return NextResponse.json({message: "succesfully logged in"}, {status: 200})
+    return NextResponse.json({message: "successfully logged in", data:user, token}, {status: 200})
 
 }catch(error){
     return NextResponse.json({message: error.message}, {status: 500})

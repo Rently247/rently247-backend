@@ -4,11 +4,12 @@ CREATE TYPE "Role" AS ENUM ('Student', 'Vendor');
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
-    "name" TEXT NOT NULL,
+    "firstName" TEXT NOT NULL,
+    "lastName" TEXT NOT NULL,
     "email" TEXT NOT NULL,
-    "phone" INTEGER NOT NULL,
-    "school" TEXT,
-    "major" TEXT,
+    "password" TEXT NOT NULL,
+    "verificationToken" TEXT,
+    "isVerified" BOOLEAN NOT NULL DEFAULT false,
     "role" "Role" NOT NULL DEFAULT 'Student',
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
@@ -31,6 +32,9 @@ CREATE TABLE "Property" (
 
     CONSTRAINT "Property_pkey" PRIMARY KEY ("id")
 );
+
+-- CreateIndex
+CREATE UNIQUE INDEX "User_email_key" ON "User"("email");
 
 -- AddForeignKey
 ALTER TABLE "Property" ADD CONSTRAINT "Property_userId_fkey" FOREIGN KEY ("userId") REFERENCES "User"("id") ON DELETE RESTRICT ON UPDATE CASCADE;

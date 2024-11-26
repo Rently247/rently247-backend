@@ -1,8 +1,38 @@
 "use client";
 
+import { useSignUp } from "@/hooks/useSignUp";
+import { useEffect, useState } from "react";
+import toast from "react-hot-toast";
 import { FaGoogle } from "react-icons/fa";
 
 const SignUpForm = () => {
+  const [signUpData, setSignUpData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+  });
+
+  const { loading, error, success, signUp } = useSignUp();
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    signUp(signUpData);
+  };
+
+  useEffect(() => {
+    if (error !== null && error !== "" && !loading && !success) {
+      toast.error(error);
+    } else if (success && !loading && error === null) {
+      toast.success(success);
+    } else if (loading) {
+      const toastId = toast.loading("Loading...");
+      return () => {
+        toast.dismiss(toastId);
+      };
+    }
+  }, [loading, error, success]);
+
   return (
     <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">
       <h2 className="text-3xl font-semibold text-center mb-4 text-gray-800">
@@ -23,6 +53,9 @@ const SignUpForm = () => {
             placeholder="First name"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2"
             required
+            onChange={(e) =>
+              setSignUpData({ ...signUpData, firstName: e.target.value })
+            }
           />
         </div>
 
@@ -33,6 +66,9 @@ const SignUpForm = () => {
             placeholder="Last name"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2"
             required
+            onChange={(e) =>
+              setSignUpData({ ...signUpData, lastName: e.target.value })
+            }
           />
         </div>
 
@@ -43,6 +79,9 @@ const SignUpForm = () => {
             placeholder="E-mail"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2"
             required
+            onChange={(e) =>
+              setSignUpData({ ...signUpData, email: e.target.value })
+            }
           />
         </div>
 
@@ -53,6 +92,9 @@ const SignUpForm = () => {
             placeholder="Password"
             className="w-full px-4 py-2 border border-gray-300 rounded-lg text-gray-700 focus:outline-none focus:ring-2"
             required
+            onChange={(e) =>
+              setSignUpData({ ...signUpData, password: e.target.value })
+            }
           />
         </div>
 
@@ -70,6 +112,7 @@ const SignUpForm = () => {
         <button
           type="submit"
           className="w-full py-3 text-sm font-medium text-white bg-primary rounded-lg hover:bg-blue-900 transition duration-300"
+          onClick={handleSubmit}
         >
           Sign up
         </button>

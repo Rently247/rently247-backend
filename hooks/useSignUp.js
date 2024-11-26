@@ -1,23 +1,28 @@
 import axios from "axios";
 
 import { useState } from "react";
-export const useSignIn = () => {
+export const useSignUp = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
 
-  const signIn = async (data) => {
-    const { email, password } = data;
+  const signUp = async (data) => {
+    const { firstName, lastName, email, password } = data;
+    console.log(" received data------------->", data);
     setLoading(true);
     await axios
-      .post("/api/user/login", {
+      .post("/api/user/register/signup", {
+        firstName,
+        lastName,
         email,
         password,
       })
       .then((response) => {
+        console.log("response------------->", response);
         setSuccess(response.data.message);
       })
       .catch((error) => {
+        console.log("error------------->", error.response.data.message);
         setError(error.response.data.message);
       })
       .finally(() => {
@@ -25,5 +30,5 @@ export const useSignIn = () => {
       });
   };
 
-  return { loading, error, success, signIn };
+  return { loading, error, success, signUp };
 };
