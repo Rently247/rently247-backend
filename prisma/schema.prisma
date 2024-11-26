@@ -20,9 +20,7 @@ model User {
   email             String     @unique
   password          String
   properties        Property[]
-  verificationToken String? 
-  isVerified        Boolean    @default(false)
-  role              Role       @default(Student)
+  role              String
 }
 
 model Property {
@@ -39,9 +37,4 @@ model Property {
   bedroom1Image   String
   bedroom2Image   String?
   bedroom3Image   String?
-}
-
-enum Role {
-  Student
-  Vendor
 }

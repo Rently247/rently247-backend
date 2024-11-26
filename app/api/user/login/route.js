@@ -1,43 +1,57 @@
 import { NextRequest, NextResponse } from "next/server";
-import jwt from "jsonwebtoken"
+import jwt from "jsonwebtoken";
 import { PrismaClient } from "@prisma/client";
+import { passwordDecryptor } from "@/util/password";
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 export async function POST(request) {
-try {
-    const {email, password } = await request.json();
+  try {
+    const { email, password } = await request.json();
 
-    if(!email || !password) {
-        return NextResponse.json({message: "Missing credentials"}, {status: 400})
+    if (!email || !password) {
+      return NextResponse.json(
+        { message: "Missing credentials" },
+        { status: 400 }
+      );
     }
 
-    await prisma.$connect()
+    await prisma.$connect();
 
     const user = await prisma.user.findUnique({
-        where: {
-            email,
-            password,
-            isVerified: true
-        }
-    })
+      where: {
+        email,
+      },
+    });
 
-    if(!user) {
-        return NextResponse.json({message: "Invalid credentials"}, {status:401})
+    if (!user) {
+      return NextResponse.json(
+        { message: "Invalid credentials" },
+        { status: 401 }
+      );
+    }
+
+    const isPasswordValid = await passwordDecryptor(password, user.password);
+    if (!isPasswordValid) {
+      return NextResponse.json(
+        { message: "Invalid credentials" },
+        { status: 401 }
+      );
     }
 
     const token = jwt.sign(
-        {userId: user.id, username: user.name},
-        process.env.SECRET_KEY,
-        {expiresIn: "2h"}
-    )
+      { userId: user.id, username: user.name },
+      process.env.SECRET_KEY,
+      { expiresIn: "2h" }
+    );
 
-    return NextResponse.json({message: "successfully logged in", data:user, token}, {status: 200})
-
-}catch(error){
-    return NextResponse.json({message: error.message}, {status: 500})
-}finally{
-    await prisma.$disconnect()
-}
-
+    return NextResponse.json(
+      { message: "successfully logged in"},
+      { status: 200 }
+    );
+  } catch (error) {
+    return NextResponse.json({ message: error.message }, { status: 500 });
+  } finally {
+    await prisma.$disconnect();
+  }
 }

@@ -16,9 +16,11 @@ export const useSignIn = () => {
       })
       .then((response) => {
         setSuccess(response.data.message);
+        setError(null);
       })
       .catch((error) => {
         setError(error.response.data.message);
+        setSuccess(null);
       })
       .finally(() => {
         setLoading(false);

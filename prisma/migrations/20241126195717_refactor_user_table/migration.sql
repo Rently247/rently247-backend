@@ -1,6 +1,3 @@
--- CreateEnum
-CREATE TYPE "Role" AS ENUM ('Student', 'Vendor');
-
 -- CreateTable
 CREATE TABLE "User" (
     "id" TEXT NOT NULL,
@@ -8,9 +5,7 @@ CREATE TABLE "User" (
     "lastName" TEXT NOT NULL,
     "email" TEXT NOT NULL,
     "password" TEXT NOT NULL,
-    "verificationToken" TEXT,
-    "isVerified" BOOLEAN NOT NULL DEFAULT false,
-    "role" "Role" NOT NULL DEFAULT 'Student',
+    "role" TEXT NOT NULL,
 
     CONSTRAINT "User_pkey" PRIMARY KEY ("id")
 );

@@ -8,7 +8,6 @@ export const useSignUp = () => {
 
   const signUp = async (data) => {
     const { firstName, lastName, email, password } = data;
-    console.log(" received data------------->", data);
     setLoading(true);
     await axios
       .post("/api/user/register/signup", {
@@ -18,11 +17,10 @@ export const useSignUp = () => {
         password,
       })
       .then((response) => {
-        console.log("response------------->", response);
+
         setSuccess(response.data.message);
       })
       .catch((error) => {
-        console.log("error------------->", error.response.data.message);
         setError(error.response.data.message);
       })
       .finally(() => {
