@@ -108,7 +108,7 @@ const PropertyCard = ({ id, address, type, price, images }) => {
 };
 
 const PropertyGrid = ({ searchValue, isSearching }) => {
-  const [fetchedProperties, setFetchedProperties] = useState([]);
+  const [filteredProperties, setFilteredProperties] = useState([]);
   const { fetchProperties, error, loading, properties } = useFetchProperties();
 
   useEffect(() => {
@@ -117,16 +117,13 @@ const PropertyGrid = ({ searchValue, isSearching }) => {
 
   useEffect(() => {
     if (!loading && !error && properties) {
-      setFetchedProperties(properties);
-    } else {
-      setFetchedProperties([]);
+      setFilteredProperties(properties);
     }
   }, [error, loading, properties]);
-
   useEffect(() => {
-    if (isSearching) {
-      const filtered = fetchedProperties.filter((property) => {
-        const addressMatch = property.address
+    if (isSearching && properties) {
+      const filtered = properties.filter((property) => {
+        const addressMatch = property.houseAddress
           .toLowerCase()
           .includes(searchValue.address.toLowerCase());
 
@@ -137,7 +134,7 @@ const PropertyGrid = ({ searchValue, isSearching }) => {
             Number(property.price) <= Number(searchValue.maxPrice));
 
         const typeMatch =
-          !searchValue.type || property.type === searchValue.type;
+          !searchValue.type || property.apartmentType === searchValue.type;
 
         const bedroomsMatch =
           !searchValue.bedrooms ||
@@ -160,20 +157,20 @@ const PropertyGrid = ({ searchValue, isSearching }) => {
         );
       });
 
-      setFetchedProperties(filtered);
+      setFilteredProperties(filtered);
+    } else if (!isSearching && properties) {
+      setFilteredProperties(properties);
     }
-  }, [searchValue, isSearching]);
-
-  console.log(" properties......", properties)
+  }, [searchValue, isSearching, properties]);
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6 gap-y-12">
-      {properties?.length > 0 ? (
-        properties.map((property) => (
+      {filteredProperties?.length > 0 ? (
+        filteredProperties.map((property) => (
           <PropertyCard
             key={property.id}
             address={property.houseAddress}
-            type={property.type}
+            type={property.apartmentType}
             price={property.price}
             bedrooms={property.bedrooms}
             bathrooms={property.bathrooms}
