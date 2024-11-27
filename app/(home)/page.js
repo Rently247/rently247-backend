@@ -13,8 +13,6 @@ export default function Home() {
     bathrooms: 0,
   });
   const [isSearching, setIsSearching] = useState(false);
-  console.log(searchValue);
-  console.log(" is searching", isSearching);
   return (
     <div>
       <PropertySearch setSearchValue={setSearchValue} searchValue={searchValue} setIsSearching={setIsSearching}  />

@@ -3,6 +3,7 @@
 import React, { useEffect, useState } from "react";
 import Slider from "react-slick";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
+import { useFetchProperties } from "@/hooks/useFetchProperties";
 
 const PropertyCard = ({ id, address, type, price, images }) => {
   const [showControls, setShowControls] = useState(false);
@@ -107,143 +108,24 @@ const PropertyCard = ({ id, address, type, price, images }) => {
 };
 
 const PropertyGrid = ({ searchValue, isSearching }) => {
-  const [filteredProperties, setFilteredProperties] = useState([]);
-  const properties = [
-    {
-      address: "KG 20, Zindiro",
-      type: "Condo",
-      price: "100000",
-      id: 1,
-      bedrooms: 2,
-      bathrooms: 1,
-      images: [
-        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
-        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
-        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
-        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
-      ],
-    },
-    {
-      address: "KG 20, Zindiro",
-      type: "Condo",
-      price: "100000",
-      bedrooms: 2,
-      bathrooms: 1,
-      id: 2,
-      images: [
-        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
-        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
-        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
-        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
-      ],
-    },
-    {
-      address: "KG 20, Zindiro",
-      type: "Condo",
-      price: "100000",
-      bedrooms: 2,
-      bathrooms: 1,
-      id: 3,
-      images: [
-        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
-        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
-        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
-        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
-      ],
-    },
-    {
-      address: "KG 20, Zindiro",
-      type: "Condo",
-      price: "100000",
-      bedrooms: 2,
-      bathrooms: 1,
-      id: 4,
-      images: [
-        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
-        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
-        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
-        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
-      ],
-    },
-    {
-      address: "KG 20, Zindiro",
-      type: "Condo",
-      price: "100000",
-      bedrooms: 2,
-      bathrooms: 1,
-      id: 5,
-      images: [
-        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
-        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
-        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
-        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
-      ],
-    },
-    {
-      address: "123 Main Street",
-      type: "Sample property",
-      price: "250000",
-      bedrooms: 2,
-      bathrooms: 1,
-      id: 6,
-      images: [
-        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
-        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
-        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
-        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
-      ],
-    },
-    {
-      address: "123 Main Street",
-      type: "Sample property",
-      price: "250000",
-      id: 7,
-      bedrooms: 2,
-      bathrooms: 1,
-      images: [
-        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
-        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
-        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
-        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
-      ],
-    },
-    {
-      address: "123 Main Street",
-      type: "Sample property",
-      price: "250000",
-      bedrooms: 2,
-      bathrooms: 1,
-      id: 8,
-      images: [
-        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
-        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
-        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
-        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
-      ],
-    },
-    {
-      address: "123 Main Street",
-      type: "Sample property",
-      price: "250000",
-      bedrooms: 2,
-      bathrooms: 1,
-      id: 9,
-      images: [
-        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
-        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
-        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
-        "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
-      ],
-    },
-  ];
+  const [fetchedProperties, setFetchedProperties] = useState([]);
+  const { fetchProperties, error, loading, properties } = useFetchProperties();
 
   useEffect(() => {
-    setFilteredProperties(properties);
+    fetchProperties();
   }, []);
 
   useEffect(() => {
+    if (!loading && !error && properties) {
+      setFetchedProperties(properties);
+    } else {
+      setFetchedProperties([]);
+    }
+  }, [error, loading, properties]);
+
+  useEffect(() => {
     if (isSearching) {
-      const filtered = properties.filter((property) => {
+      const filtered = fetchedProperties.filter((property) => {
         const addressMatch = property.address
           .toLowerCase()
           .includes(searchValue.address.toLowerCase());
@@ -278,32 +160,30 @@ const PropertyGrid = ({ searchValue, isSearching }) => {
         );
       });
 
-      setFilteredProperties(filtered);
-    } else {
-      setFilteredProperties(properties);
+      setFetchedProperties(filtered);
     }
   }, [searchValue, isSearching]);
 
-  console.log(" filtered properties", filteredProperties);
+  console.log(" properties......", properties)
 
   return (
     <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6 gap-y-12">
-      {filteredProperties.length > 0 ? (
-        filteredProperties.map((property) => (
+      {properties?.length > 0 ? (
+        properties.map((property) => (
           <PropertyCard
             key={property.id}
-            address={property.address}
+            address={property.houseAddress}
             type={property.type}
             price={property.price}
             bedrooms={property.bedrooms}
             bathrooms={property.bathrooms}
-            images={property.images}
+            images={property.propertyImages}
             id={property.id}
           />
         ))
       ) : (
         <div className="col-span-full text-center text-gray-500">
-          No properties found matching your criteria
+          {loading ? "Loading..." : "No properties found."}
         </div>
       )}
     </div>
