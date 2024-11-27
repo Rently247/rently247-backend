@@ -1,9 +1,20 @@
 "use client";
 
-import React, { useState } from "react";
+import { useUser } from "@/contexts/UserContexts";
+import { useRouter } from "next/navigation";
+import React, { useEffect, useState } from "react";
 
 const ListYourProperty = () => {
   const [activeTab, setActiveTab] = useState(0);
+  const { user, loading } = useUser();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (!user && !loading) {
+      router.push("/login");
+    }
+  }, [user, loading]);
+  console.log(user);
 
   const tabsInfo = [
     {

@@ -1,6 +1,8 @@
 "use client";
 
+import { useUser } from "@/contexts/UserContexts";
 import { useSignUp } from "@/hooks/useSignUp";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import toast from "react-hot-toast";
 import { FaGoogle } from "react-icons/fa";
@@ -12,6 +14,9 @@ const SignUpForm = () => {
     email: "",
     password: "",
   });
+  const router = useRouter();
+
+  const { user: loggedInUser, loading: userLoading } = useUser();
 
   const { loading, error, success, signUp } = useSignUp();
 
@@ -21,10 +26,17 @@ const SignUpForm = () => {
   };
 
   useEffect(() => {
+    if (loggedInUser !== null && !userLoading) {
+      router.push("/");
+    }
+  }, [loggedInUser, userLoading]);
+
+  useEffect(() => {
     if (error !== null && error !== "" && !loading && !success) {
       toast.error(error);
     } else if (success && !loading && error === null) {
       toast.success(success);
+      router.push("/login");
     } else if (loading) {
       const toastId = toast.loading("Loading...");
       return () => {
