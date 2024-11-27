@@ -1,20 +1,177 @@
 "use client";
 
 import { useUser } from "@/contexts/UserContexts";
+import { usePropertyListing } from "@/hooks/usePropertyListing";
 import { useRouter } from "next/navigation";
 import React, { useEffect, useState } from "react";
+import toast from "react-hot-toast";
+import uploadFile from "@/util/uploadFile";
 
 const ListYourProperty = () => {
   const [activeTab, setActiveTab] = useState(0);
-  const { user, loading } = useUser();
+  const { user, loading: userLoading } = useUser();
   const router = useRouter();
+  const [uploadingImageIndex, setUploadingImageIndex] = useState(null);
+
+  const { submitProperty, error, success, loading } = usePropertyListing();
+
+  const [propertyData, setPropertyData] = useState({
+    name: "",
+    apartmentType: "",
+    guests: 0,
+    bedrooms: 0,
+    bathrooms: 0,
+    toilets: 0,
+    features: [],
+    description: "",
+    images: [],
+    address: "",
+    province: "",
+    district: "",
+    sector: "",
+    landmark: "",
+    estate: "",
+    currency: "",
+    price: 0,
+    period: "",
+  });
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    const data = {
+      ...propertyData,
+      houseAddress: propertyData.address,
+      propertyImages: propertyData.images,
+      estateName: propertyData.estate,
+      userId: user.id,
+      guests: parseInt(propertyData.guests),
+      bedrooms: parseInt(propertyData.bedrooms),
+      bathrooms: parseInt(propertyData.bathrooms),
+      toilets: parseInt(propertyData.toilets),
+      price: Number(propertyData.price),
+    };
+    delete data.address;
+    delete data.images;
+    delete data.estate;
+    if (
+      isNaN(data.guests) ||
+      isNaN(data.bedrooms) ||
+      isNaN(data.bathrooms) ||
+      isNaN(data.toilets) ||
+      isNaN(data.price)
+    ) {
+      toast.error("Please enter valid numbers");
+      return;
+    }
+    if (await submitProperty(data)) {
+      router.push("/");
+    }
+  };
+
+  const handleChanges = (e) => {
+    const { name, value } = e.target;
+    setPropertyData({ ...propertyData, [name]: value });
+  };
+
+  const handleCheckbox = (e) => {
+    const { name, checked } = e.target;
+    if (checked) {
+      setPropertyData({
+        ...propertyData,
+        features: [...propertyData.features, name],
+      });
+    } else {
+      setPropertyData({
+        ...propertyData,
+        features: propertyData.features.filter((feature) => feature !== name),
+      });
+    }
+  };
+
+  const handleImageUpload = async (e, index) => {
+    if (!e.target?.files[0]) return;
+    const file = e.target.files[0];
+    try {
+      setUploadingImageIndex(index);
+      const response = await uploadFile(file);
+      if (!response) {
+        throw new Error("Upload failed");
+      }
+      setPropertyData({
+        ...propertyData,
+        images: [...propertyData.images, response],
+      });
+      toast.success("Image uploaded successfully");
+    } catch (error) {
+      console.error("Upload failed", error);
+      toast.error("Image upload failed");
+    } finally {
+      setUploadingImageIndex(null);
+    }
+  };
 
   useEffect(() => {
-    if (!user && !loading) {
+    if (!user && !userLoading) {
       router.push("/login");
     }
-  }, [user, loading]);
-  console.log(user);
+  }, [user, userLoading]);
+
+  useEffect(() => {
+    if (error !== null && error !== "" && !loading && !success) {
+      toast.error(error);
+    } else if (success && !loading && error === null) {
+      toast.success(success);
+      router.push("/");
+    } else if (loading) {
+      const toastId = toast.loading("Loading...");
+      return () => {
+        toast.dismiss(toastId);
+      };
+    }
+  }, [loading, error, success]);
+
+  const isTab1Valid =
+    propertyData.name !== "" &&
+    propertyData.apartmentType !== "" &&
+    propertyData.guests !== 0 &&
+    propertyData.bedrooms !== 0 &&
+    propertyData.bathrooms !== 0 &&
+    propertyData.toilets !== 0 &&
+    propertyData.description !== "";
+  const isTab2Valid =
+    propertyData.images.length > 0 &&
+    propertyData.address !== "" &&
+    propertyData.province !== "" &&
+    propertyData.district !== "" &&
+    propertyData.sector !== "" &&
+    propertyData.landmark !== "" &&
+    propertyData.estate !== "";
+  const isTab3Valid =
+    propertyData.currency !== "" &&
+    propertyData.price !== 0 &&
+    propertyData.period !== "";
+
+  const tab1ValidationMessage = !isTab1Valid ? "Please fill in all fields" : "";
+  const tab2ValidationMessage = !isTab2Valid ? "Please fill in all fields" : "";
+  const tab3ValidationMessage = !isTab3Valid ? "Please fill in all fields" : "";
+
+  const handleNext = (e) => {
+    if (activeTab === 0 && isTab1Valid) {
+      setActiveTab(activeTab + 1);
+    } else if (activeTab === 1 && isTab2Valid) {
+      setActiveTab(activeTab + 1);
+    } else if (activeTab === 2 && isTab3Valid) {
+      handleSubmit(e);
+    } else {
+      if (activeTab === 0) {
+        toast.error(tab1ValidationMessage);
+      } else if (activeTab === 1) {
+        toast.error(tab2ValidationMessage);
+      } else if (activeTab === 2) {
+        toast.error(tab3ValidationMessage);
+      }
+    }
+  };
 
   const tabsInfo = [
     {
@@ -38,7 +195,7 @@ const ListYourProperty = () => {
           <div
             key={index}
             className={`cursor-pointer p-4 flex-1`}
-            onClick={() => setActiveTab(index)}
+            // onClick={() => setActiveTab(index)}
           >
             <div
               className={`h-[2px] w-full ${
@@ -82,6 +239,9 @@ const ListYourProperty = () => {
                 id="name"
                 className="border rounded-lg p-2 w-full"
                 placeholder="Enter name of property"
+                onChange={handleChanges}
+                name="name"
+                value={propertyData.name}
               />
             </div>
             <div>
@@ -91,7 +251,13 @@ const ListYourProperty = () => {
               >
                 Apartment Type
               </label>
-              <select id="apartment" className="border rounded-lg p-2 w-full">
+              <select
+                id="apartment"
+                className="border rounded-lg p-2 w-full"
+                name="apartmentType"
+                onChange={handleChanges}
+                value={propertyData.apartmentType}
+              >
                 <option value="">Select apartment type</option>
                 <option value="1">Single Room</option>
                 <option value="2">Two Room</option>
@@ -113,7 +279,9 @@ const ListYourProperty = () => {
                 id="guests"
                 className="border rounded-lg p-2 w-full"
                 placeholder="Enter number of guests"
-                defaultValue={0}
+                onChange={handleChanges}
+                name="guests"
+                value={propertyData.guests}
               />
             </div>
 
@@ -129,7 +297,9 @@ const ListYourProperty = () => {
                 id="bedrooms"
                 className="border rounded-lg p-2 w-full"
                 placeholder="Enter number of bedrooms"
-                defaultValue={0}
+                onChange={handleChanges}
+                name="bedrooms"
+                value={propertyData.bedrooms}
               />
             </div>
 
@@ -145,7 +315,9 @@ const ListYourProperty = () => {
                 id="bathrooms"
                 className="border rounded-lg p-2 w-full"
                 placeholder="Enter number of bathrooms"
-                defaultValue={0}
+                onChange={handleChanges}
+                name="bathrooms"
+                value={propertyData.bathrooms}
               />
             </div>
 
@@ -161,7 +333,9 @@ const ListYourProperty = () => {
                 id="toilets"
                 className="border rounded-lg p-2 w-full"
                 placeholder="Enter number of toilets"
-                defaultValue={0}
+                onChange={handleChanges}
+                name="toilets"
+                value={propertyData.toilets}
               />
             </div>
 
@@ -185,7 +359,14 @@ const ListYourProperty = () => {
                   "Bar",
                 ].map((feature) => (
                   <div key={feature} className="flex items-center">
-                    <input type="checkbox" id={feature} className="mr-2" />
+                    <input
+                      type="checkbox"
+                      id={feature}
+                      className="mr-2"
+                      onChange={handleCheckbox}
+                      name={feature}
+                      checked={propertyData.features.includes(feature)}
+                    />
                     <label htmlFor={feature}>{feature}</label>
                   </div>
                 ))}
@@ -206,6 +387,9 @@ const ListYourProperty = () => {
                 className="border rounded-lg p-2 w-full"
                 placeholder="Enter description of property"
                 rows={5}
+                onChange={handleChanges}
+                name="description"
+                value={propertyData.description}
               ></textarea>
             </div>
           </div>
@@ -219,21 +403,51 @@ const ListYourProperty = () => {
             Tell us where your place is located
           </h2>
           <div className="grid grid-cols-3 gap-4">
-            {[1, 2, 3, 4, 5, 6].map((image) => (
-              <div key={image} className="relative aspect-square bg-gray-200">
-                <input
-                  type="file"
-                  id={`image-${image}`}
-                  className="absolute inset-0 w-full h-full opacity-0"
-                />
-                <label
-                  htmlFor={`image-${image}`}
-                  className="absolute inset-0 flex items-center justify-center cursor-pointer"
-                >
-                  <span className="text-white text-lg">+</span>
-                </label>
-              </div>
-            ))}
+            {Array.from({ length: Math.max(6, propertyData.images.length + 1) })
+              .map((_, index) => index)
+              .map((image, index) =>
+                uploadingImageIndex === index ? (
+                  <div
+                    key={image}
+                    className="relative aspect-square bg-gray-200"
+                  >
+                    <div className="absolute inset-0 flex items-center justify-center">
+                      <span className="text-white text-lg">Uploading...</span>
+                    </div>
+                  </div>
+                ) : propertyData.images[index] ? (
+                  <div
+                    key={image}
+                    className="relative aspect-square bg-gray-200"
+                  >
+                    <img
+                      src={propertyData.images[index]}
+                      alt="Property"
+                      className="w-full h-full object-cover rounded-lg"
+                    />
+                  </div>
+                ) : (
+                  <div
+                    key={image}
+                    className="relative aspect-square bg-gray-200"
+                  >
+                    <input
+                      accept="image/*"
+                      type="file"
+                      id={`image-${image}`}
+                      className="absolute inset-0 w-full h-full opacity-0"
+                      onChange={(e) => handleImageUpload(e, index)}
+                      disabled={uploadingImageIndex !== null}
+                    />
+                    <label
+                      htmlFor={`image-${image}`}
+                      className="absolute inset-0 flex items-center justify-center cursor-pointer"
+                    >
+                      <span className="text-white text-lg">+</span>
+                    </label>
+                  </div>
+                )
+              )}
           </div>
           <div className="mt-4">
             {/* House Address */}
@@ -248,6 +462,9 @@ const ListYourProperty = () => {
               id="address"
               className="border rounded-lg p-2 w-full"
               placeholder="Enter address of property"
+              onChange={handleChanges}
+              name="address"
+              value={propertyData.address}
             />
             {/* province, district, sector */}
             <div className="grid grid-cols-3 gap-4 mt-4">
@@ -258,7 +475,13 @@ const ListYourProperty = () => {
                 >
                   Province
                 </label>
-                <select id="province" className="border rounded-lg p-2 w-full">
+                <select
+                  id="province"
+                  className="border rounded-lg p-2 w-full"
+                  onChange={handleChanges}
+                  name="province"
+                  value={propertyData.province}
+                >
                   <option value="">Select province</option>
                   <option value="1">Kigali</option>
                   <option value="2">Western</option>
@@ -274,7 +497,13 @@ const ListYourProperty = () => {
                 >
                   District
                 </label>
-                <select id="district" className="border rounded-lg p-2 w-full">
+                <select
+                  id="district"
+                  className="border rounded-lg p-2 w-full"
+                  onChange={handleChanges}
+                  name="district"
+                  value={propertyData.district}
+                >
                   <option value="">Select district</option>
                   <option value="1">Gasabo</option>
                   <option value="2">Kicukiro</option>
@@ -288,7 +517,13 @@ const ListYourProperty = () => {
                 >
                   Sector
                 </label>
-                <select id="sector" className="border rounded-lg p-2 w-full">
+                <select
+                  id="sector"
+                  className="border rounded-lg p-2 w-full"
+                  onChange={handleChanges}
+                  name="sector"
+                  value={propertyData.sector}
+                >
                   <option value="">Select sector</option>
                   <option value="1">Remera</option>
                   <option value="2">Gisozi</option>
@@ -311,6 +546,9 @@ const ListYourProperty = () => {
                   id="landmark"
                   className="border rounded-lg p-2 w-full"
                   placeholder="Enter landmark"
+                  onChange={handleChanges}
+                  name="landmark"
+                  value={propertyData.landmark}
                 />
               </div>
               <div>
@@ -325,6 +563,9 @@ const ListYourProperty = () => {
                   id="estate"
                   className="border rounded-lg p-2 w-full"
                   placeholder="Enter name of estate"
+                  onChange={handleChanges}
+                  name="estate"
+                  value={propertyData.estate}
                 />
               </div>
             </div>
@@ -344,7 +585,13 @@ const ListYourProperty = () => {
               >
                 Currency
               </label>
-              <select id="currency" className="border rounded-lg p-2 w-full">
+              <select
+                id="currency"
+                className="border rounded-lg p-2 w-full"
+                onChange={handleChanges}
+                name="currency"
+                value={propertyData.currency}
+              >
                 <option value="">Select currency</option>
                 <option value="1">RWF</option>
                 <option value="2">USD</option>
@@ -363,6 +610,9 @@ const ListYourProperty = () => {
                 id="price"
                 className="border rounded-lg p-2 w-full"
                 placeholder="Enter price"
+                onChange={handleChanges}
+                name="price"
+                value={propertyData.price}
               />
             </div>
             <div>
@@ -372,7 +622,13 @@ const ListYourProperty = () => {
               >
                 Period
               </label>
-              <select id="period" className="border rounded-lg p-2 w-full">
+              <select
+                id="period"
+                className="border rounded-lg p-2 w-full"
+                onChange={handleChanges}
+                name="period"
+                value={propertyData.period}
+              >
                 <option value="">Select period</option>
                 <option value="1">Yearly</option>
                 <option value="2">Monthly</option>
@@ -393,10 +649,14 @@ const ListYourProperty = () => {
         </button>
         <button
           className="bg-primary text-white px-4 py-2 rounded-lg"
-          onClick={() => setActiveTab(activeTab + 1)}
-          disabled={activeTab === tabsInfo.length - 1}
+          onClick={handleNext}
+          disabled={loading}
         >
-          Next
+          {activeTab === tabsInfo.length - 1
+            ? loading
+              ? "Submitting..."
+              : "Submit"
+            : "Next"}
         </button>
       </div>
     </div>
