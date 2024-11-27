@@ -5,6 +5,7 @@ export const useSignIn = () => {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [success, setSuccess] = useState(null);
+  const [user, setUser] = useState(null);
 
   const signIn = async (data) => {
     const { email, password } = data;
@@ -16,6 +17,7 @@ export const useSignIn = () => {
       })
       .then((response) => {
         setSuccess(response.data.message);
+        setUser(response.data.user);
         setError(null);
       })
       .catch((error) => {
@@ -27,5 +29,5 @@ export const useSignIn = () => {
       });
   };
 
-  return { loading, error, success, signIn };
+  return { loading, error, success, user, signIn };
 };

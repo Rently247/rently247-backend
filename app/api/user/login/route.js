@@ -44,9 +44,12 @@ export async function POST(request) {
       process.env.SECRET_KEY,
       { expiresIn: "2h" }
     );
+   
+    delete user.password;
+
 
     return NextResponse.json(
-      { message: "successfully logged in"},
+      { message: "successfully logged in", user, token },
       { status: 200 }
     );
   } catch (error) {

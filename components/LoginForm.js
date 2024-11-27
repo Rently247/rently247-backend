@@ -4,15 +4,19 @@ import { useSignIn } from "@/hooks/useSignIn";
 import { useEffect, useState } from "react";
 import { FaGoogle } from "react-icons/fa";
 import toast from "react-hot-toast";
+import { useRouter } from "next/navigation";
+import { useUser } from "@/contexts/UserContexts";
 
 const LoginForm = () => {
+  const router = useRouter();
+  const { login } = useUser();
   const [showPassword, setShowPassword] = useState(false);
   const [loginData, setLoginData] = useState({
     email: "",
     password: "",
   });
 
-  const { loading, error, success, signIn } = useSignIn();
+  const { loading, error, success, user, signIn } = useSignIn();
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -24,6 +28,8 @@ const LoginForm = () => {
       toast.error(error);
     } else if (success && !loading && error === null) {
       toast.success(success);
+      login(user);
+      router.push("/");
     } else if (loading) {
       const toastId = toast.loading("Loading...");
       return () => {
