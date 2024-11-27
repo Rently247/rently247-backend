@@ -3,10 +3,13 @@
 import Image from "next/image";
 import { useState, useEffect } from "react";
 import { FaHome, FaBars, FaTimes } from "react-icons/fa";
+import { BsPersonCircle } from "react-icons/bs";
+import { useUser } from "@/contexts/UserContexts";
 
 const Header = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const { user,logout } = useUser();
 
   useEffect(() => {
     const handleScroll = () => {
@@ -18,6 +21,7 @@ const Header = () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
+
 
   return (
     <header
@@ -58,20 +62,39 @@ const Header = () => {
               {item}
             </a>
           ))}
+         {!user ? (
+          <div>
           <a
-            href="/login"
-            className={`py-2 px-4 text-sm font-medium rounded-md transition-colors duration-300 bg-gray-800 text-white hover:bg-gray-900`}
-          >
-            Log in
-          </a>
-          <a
-            href="/signup"
-            className={`py-2 px-4 ml-2 text-sm font-medium rounded-md border transition-colors duration-300 border-gray-800 text-gray-800 hover:bg-gray-200 ${
-              isScrolled ? "border-gray-900" : ""
-            }`}
-          >
-            Sign up
-          </a>
+             href="/login"
+             className={`py-2 px-4 text-sm font-medium rounded-md transition-colors duration-300 bg-gray-800 text-white hover:bg-gray-900`}
+           >
+             Log in
+           </a>
+           <a
+             href="/signup"
+             className={`py-2 px-4 ml-2 text-sm font-medium rounded-md border transition-colors duration-300 border-gray-800 text-gray-800 hover:bg-gray-200 ${
+               isScrolled ? "border-gray-900" : ""
+             }`}
+           >
+             Sign up
+           </a>
+          </div>
+         ): (
+          <div className="flex justify-between items-center gap-10 cursor-pointer"> 
+            <div className="flex justify-center items-center gap-2">
+            <BsPersonCircle size={30} />
+            <span>{user?.firstName} {user?.lastName}</span>
+            </div>
+           <div>
+           <button
+              onClick={logout}
+              className="py-2 px-4 text-sm font-medium rounded-md transition-colors duration-300 bg-gray-800 text-white hover:bg-gray-900"
+            >
+              Logout
+            </button>
+           </div>
+          </div>
+         )}
         </nav>
         {/* Mobile Menu Toggle */}
         <button
