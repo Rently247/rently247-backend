@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import Slider from "react-slick";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 
@@ -106,13 +106,16 @@ const PropertyCard = ({ id, address, type, price, images }) => {
   );
 };
 
-const PropertyGrid = () => {
+const PropertyGrid = ({ searchValue, isSearching }) => {
+  const [filteredProperties, setFilteredProperties] = useState([]);
   const properties = [
     {
       address: "KG 20, Zindiro",
       type: "Condo",
       price: "100000",
       id: 1,
+      bedrooms: 2,
+      bathrooms: 1,
       images: [
         "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
         "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
@@ -124,6 +127,8 @@ const PropertyGrid = () => {
       address: "KG 20, Zindiro",
       type: "Condo",
       price: "100000",
+      bedrooms: 2,
+      bathrooms: 1,
       id: 2,
       images: [
         "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
@@ -136,6 +141,8 @@ const PropertyGrid = () => {
       address: "KG 20, Zindiro",
       type: "Condo",
       price: "100000",
+      bedrooms: 2,
+      bathrooms: 1,
       id: 3,
       images: [
         "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
@@ -148,6 +155,8 @@ const PropertyGrid = () => {
       address: "KG 20, Zindiro",
       type: "Condo",
       price: "100000",
+      bedrooms: 2,
+      bathrooms: 1,
       id: 4,
       images: [
         "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
@@ -160,6 +169,8 @@ const PropertyGrid = () => {
       address: "KG 20, Zindiro",
       type: "Condo",
       price: "100000",
+      bedrooms: 2,
+      bathrooms: 1,
       id: 5,
       images: [
         "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
@@ -172,6 +183,8 @@ const PropertyGrid = () => {
       address: "123 Main Street",
       type: "Sample property",
       price: "250000",
+      bedrooms: 2,
+      bathrooms: 1,
       id: 6,
       images: [
         "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
@@ -185,6 +198,8 @@ const PropertyGrid = () => {
       type: "Sample property",
       price: "250000",
       id: 7,
+      bedrooms: 2,
+      bathrooms: 1,
       images: [
         "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
         "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
@@ -196,6 +211,8 @@ const PropertyGrid = () => {
       address: "123 Main Street",
       type: "Sample property",
       price: "250000",
+      bedrooms: 2,
+      bathrooms: 1,
       id: 8,
       images: [
         "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
@@ -208,6 +225,8 @@ const PropertyGrid = () => {
       address: "123 Main Street",
       type: "Sample property",
       price: "250000",
+      bedrooms: 2,
+      bathrooms: 1,
       id: 9,
       images: [
         "https://i.ytimg.com/vi/UbtJncQuHGE/maxresdefault.jpg",
@@ -218,21 +237,76 @@ const PropertyGrid = () => {
     },
   ];
 
+  useEffect(() => {
+    setFilteredProperties(properties);
+  }, []);
+
+  useEffect(() => {
+    if (isSearching) {
+      const filtered = properties.filter((property) => {
+        const addressMatch = property.address
+          .toLowerCase()
+          .includes(searchValue.address.toLowerCase());
+
+        const priceMatch =
+          (!searchValue.minPrice ||
+            Number(property.price) >= Number(searchValue.minPrice)) &&
+          (!searchValue.maxPrice ||
+            Number(property.price) <= Number(searchValue.maxPrice));
+
+        const typeMatch =
+          !searchValue.type || property.type === searchValue.type;
+
+        const bedroomsMatch =
+          !searchValue.bedrooms ||
+          (searchValue.bedrooms === "4+"
+            ? property.bedrooms >= 4
+            : property.bedrooms === Number(searchValue.bedrooms));
+
+        const bathroomsMatch =
+          !searchValue.bathrooms ||
+          (searchValue.bathrooms === "4+"
+            ? property.bathrooms >= 4
+            : property.bathrooms === Number(searchValue.bathrooms));
+
+        return (
+          addressMatch &&
+          priceMatch &&
+          typeMatch &&
+          bedroomsMatch &&
+          bathroomsMatch
+        );
+      });
+
+      setFilteredProperties(filtered);
+    } else {
+      setFilteredProperties(properties);
+    }
+  }, [searchValue, isSearching]);
+
+  console.log(" filtered properties", filteredProperties);
+
   return (
-    <>
-      <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6 gap-y-12">
-        {properties.map((property) => (
+    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 p-6 gap-y-12">
+      {filteredProperties.length > 0 ? (
+        filteredProperties.map((property) => (
           <PropertyCard
             key={property.id}
             address={property.address}
             type={property.type}
             price={property.price}
+            bedrooms={property.bedrooms}
+            bathrooms={property.bathrooms}
             images={property.images}
             id={property.id}
           />
-        ))}
-      </div>
-    </>
+        ))
+      ) : (
+        <div className="col-span-full text-center text-gray-500">
+          No properties found matching your criteria
+        </div>
+      )}
+    </div>
   );
 };
 
