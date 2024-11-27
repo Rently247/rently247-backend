@@ -9,7 +9,7 @@ import { useUser } from "@/contexts/UserContexts";
 
 const LoginForm = () => {
   const router = useRouter();
-  const { login } = useUser();
+  const { login, user: loggedInUser, loading: userLoading } = useUser();
   const [showPassword, setShowPassword] = useState(false);
   const [loginData, setLoginData] = useState({
     email: "",
@@ -22,6 +22,12 @@ const LoginForm = () => {
     e.preventDefault();
     signIn(loginData);
   };
+
+  useEffect(() => {
+    if (loggedInUser !== null && !userLoading) {
+      router.push("/");
+    }
+  }, [loggedInUser, userLoading]);
 
   useEffect(() => {
     if (error !== null && error !== "" && !loading && !success) {
@@ -37,7 +43,6 @@ const LoginForm = () => {
       };
     }
   }, [loading, error, success]);
-
 
   return (
     <div className="w-full max-w-md bg-white p-8 rounded-lg shadow-lg">

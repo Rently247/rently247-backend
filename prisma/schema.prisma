@@ -26,15 +26,23 @@ model User {
 model Property {
   id              String @id @default(cuid())
   name            String
-  location        String
+  apartmentType   String
+  guests          Int
+  bedrooms        Int
+  bathrooms       Int
+  toilets         Int
+  features        String[]
+  description     String
+  propertyImages  String[]
+  houseAddress    String
+  province        String
+  district        String
+  sector          String
+  landmark        String?
+  estateName      String?
   owner           User @relation(fields: [userId], references: [id])
   userId          String
-  frontImage      String
-  backImage       String
-  bedroomImage    String
-  bathroomImage   String
-  livingroomImage String
-  bedroom1Image   String
-  bedroom2Image   String?
-  bedroom3Image   String?
+  price           Float
+  currency        String
+  period          String
 }
