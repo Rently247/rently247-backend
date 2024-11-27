@@ -1,4 +1,4 @@
-const unsignedUploadPreset = "opmuqubw";
+const unsignedUploadPreset = "ywb3cnzo";
 
 // *********** Upload file to Cloudinary ******************** //
 export default async function uploadFile(file) {
