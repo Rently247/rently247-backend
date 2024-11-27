@@ -5,7 +5,7 @@ import Slider from "react-slick";
 import { ChevronLeftIcon, ChevronRightIcon } from "lucide-react";
 import { useFetchProperties } from "@/hooks/useFetchProperties";
 
-const PropertyCard = ({ id, address, type, price, images }) => {
+const PropertyCard = ({ id, address, type, price, images, currency }) => {
   const [showControls, setShowControls] = useState(false);
   const sliderRef = React.useRef(null);
 
@@ -99,7 +99,7 @@ const PropertyCard = ({ id, address, type, price, images }) => {
         <h3 className="font-bold text-gray-900">{address}</h3>
         <p className="text-gray-600">{type}</p>
         <p className="font-semibold text-gray-900">
-          RWF {Number(price)?.toLocaleString()}{" "}
+          {currency} {Number(price)?.toLocaleString()}{" "}
           <span className="text-sm text-gray-600 font-normal">/ month</span>
         </p>
       </a>
@@ -175,6 +175,7 @@ const PropertyGrid = ({ searchValue, isSearching }) => {
             bedrooms={property.bedrooms}
             bathrooms={property.bathrooms}
             images={property.propertyImages}
+            currency={property.currency}
             id={property.id}
           />
         ))
