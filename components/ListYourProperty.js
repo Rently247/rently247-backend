@@ -259,10 +259,10 @@ const ListYourProperty = () => {
                 value={propertyData.apartmentType}
               >
                 <option value="">Select apartment type</option>
-                <option value="1">Single Room</option>
-                <option value="2">Two Room</option>
-                <option value="3">Three Room</option>
-                <option value="4">Four Room</option>
+                <option value="Single Room">Single Room</option>
+                <option value="Two Room">Two Room</option>
+                <option value="Three Room">Three Room</option>
+                <option value="Four Room">Four Room</option>
               </select>
             </div>
             {/* No. of guests, No. of Bedrooms, No. of Bathrooms, No. of Toilets */}
@@ -483,11 +483,11 @@ const ListYourProperty = () => {
                   value={propertyData.province}
                 >
                   <option value="">Select province</option>
-                  <option value="1">Kigali</option>
-                  <option value="2">Western</option>
-                  <option value="3">Eastern</option>
-                  <option value="4">Southern</option>
-                  <option value="5">Northern</option>
+                  <option value="Kigali">Kigali</option>
+                  <option value="Western">Western</option>
+                  <option value="Eastern">Eastern</option>
+                  <option value="Southern">Southern</option>
+                  <option value="Nothern">Northern</option>
                 </select>
               </div>
               <div>
@@ -505,9 +505,9 @@ const ListYourProperty = () => {
                   value={propertyData.district}
                 >
                   <option value="">Select district</option>
-                  <option value="1">Gasabo</option>
-                  <option value="2">Kicukiro</option>
-                  <option value="3">Nyarugenge</option>
+                  <option value="Gasabo">Gasabo</option>
+                  <option value="Kicukiro">Kicukiro</option>
+                  <option value="Nyarugenge">Nyarugenge</option>
                 </select>
               </div>
               <div>
@@ -525,9 +525,9 @@ const ListYourProperty = () => {
                   value={propertyData.sector}
                 >
                   <option value="">Select sector</option>
-                  <option value="1">Remera</option>
-                  <option value="2">Gisozi</option>
-                  <option value="3">Kimironko</option>
+                  <option value="Remera">Remera</option>
+                  <option value="Gisozi">Gisozi</option>
+                  <option value="Kimironko">Kimironko</option>
                 </select>
               </div>
             </div>
@@ -593,9 +593,9 @@ const ListYourProperty = () => {
                 value={propertyData.currency}
               >
                 <option value="">Select currency</option>
-                <option value="1">RWF</option>
-                <option value="2">USD</option>
-                <option value="3">EUR</option>
+                <option value="RWF">RWF</option>
+                <option value="USD">USD</option>
+                <option value="EUR">EUR</option>
               </select>
             </div>
             <div>
@@ -630,8 +630,8 @@ const ListYourProperty = () => {
                 value={propertyData.period}
               >
                 <option value="">Select period</option>
-                <option value="1">Yearly</option>
-                <option value="2">Monthly</option>
+                <option value="Year">Yearly</option>
+                <option value="Month">Monthly</option>
               </select>
             </div>
           </div>
