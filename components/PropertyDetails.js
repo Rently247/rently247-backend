@@ -55,7 +55,7 @@ export default function PropertyDetails({ property }) {
           </div>
         )}
         <div className="w-full lg:w-1/2 flex flex-wrap gap-2">
-          {property.propertyImages?.slice(1, 4).map((image, index) => (
+          {property.propertyImages?.slice(1, 5).map((image, index) => (
             <img
               key={index}
               src={image}

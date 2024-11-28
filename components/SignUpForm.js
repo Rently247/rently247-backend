@@ -125,8 +125,9 @@ const SignUpForm = () => {
           type="submit"
           className="w-full py-3 text-sm font-medium text-white bg-primary rounded-lg hover:bg-blue-900 transition duration-300"
           onClick={handleSubmit}
+          disabled={loading}
         >
-          Sign up
+          {loading ? "Loading..." : "Sign Up"}
         </button>
       </form>
 
